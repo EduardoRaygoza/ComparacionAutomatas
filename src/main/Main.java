@@ -8,11 +8,11 @@ import util.ParOrdenado;
 
 public class Main {
     private Automata a1, a2;
-    private String msg, estadoInicial;
+    private String msg, estadoInicial, estadoDestino1, estadoDestino2;
     private ArrayList<String> estados, alfabeto, estadosFinales;
     private ArrayList<FuncionTransicion> transiciones;
     private ArrayList<ParOrdenado> listaPares;
-    private ParOrdenado par;
+    private ParOrdenado par, par1, par2;
     
     public Main(){
         //Se recolecta la informacion del automata
@@ -56,8 +56,39 @@ public class Main {
         
         listaPares = new ArrayList<>();
         listaPares.add(new ParOrdenado(a1.getEstadoInicial(), a2.getEstadoInicial()));
-        
-        
+        do{
+            par = null;
+            for (int i = 0; i < listaPares.size(); i++) {
+                if(!listaPares.get(i).isChecked()){
+                    par = listaPares.get(i);
+                    break;
+                }
+            }
+            if(par == null){
+                msg = "Se termino la tabla de comparacion, los automatas son equivalentes";
+                JOptionPane.showMessageDialog(null, msg);
+                System.exit(0);
+            }else {
+                for (int i = 0; i < alfabeto.size(); i++) {
+                    par1 = new ParOrdenado(a1.getEstado(par.getM1(), alfabeto.get(i)), a2.getEstado(par.getM2(), alfabeto.get(i)));
+                    estadoDestino1 = par1.getM1();
+                    estadoDestino2 = par1.getM2();
+                    if((a1.esEstadoFinal(estadoDestino1) && a2.esEstadoFinal(estadoDestino2)) || 
+                            (!a1.esEstadoFinal(estadoDestino1) && !a2.esEstadoFinal(estadoDestino2))){
+                        if(!isOnList(par1)){
+                            listaPares.add(par1);
+                        }
+                    }else{
+                        msg = "Se encontro una incompatibilidad en los estados, los automatas no son equivalentes";
+                        JOptionPane.showMessageDialog(null, msg);
+                        System.exit(0);
+                    }
+                }
+                par.setChecked(true);
+            }
+        }while(checkListaPares());
+        msg ="Los estados son equivalentes";
+        JOptionPane.showMessageDialog(null, msg);
     }
     
     public ArrayList<String> getEstados(int i){
@@ -106,7 +137,6 @@ public class Main {
     }
     
     public String getEstadoIncial(int i){
-        String ph;
         msg = "Ingresa el estado inicial para el automata "+i+"\n"
                 + "(Solo se acepta un solo estado)";
         return JOptionPane.showInputDialog(msg).trim();
@@ -127,6 +157,26 @@ public class Main {
             }
         }
         return lista;
+    }
+    
+    public boolean checkListaPares(){
+        boolean check = false;
+        for (int i = 0; i < listaPares.size(); i++) {
+            if(!listaPares.get(i).isChecked())
+                check = true;
+        }
+        return check;
+    }
+    
+    public boolean isOnList(ParOrdenado par){
+        boolean check = false;
+        ParOrdenado ph;
+        for (int i = 0; i < listaPares.size(); i++) {
+            ph = listaPares.get(i);
+            if(ph.getM1().equals(par.getM1()) && ph.getM2().equals(par.getM2()))
+                check = true;
+        }
+        return check;
     }
     
     public static void main(String[] args) {

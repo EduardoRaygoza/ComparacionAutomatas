@@ -46,7 +46,7 @@ public class Automata {
     
     public String getEstado(String estadoInicial, String simbolo){
         FuncionTransicion transicion;
-        String estado;
+        String estado = "";
         for (int i = 0; i < transiciones.size(); i++) {
             transicion = transiciones.get(i);
             if(transicion.getEstadoInicial().equals(estadoInicial) && transicion.getSimbolo().equals(simbolo))
@@ -61,6 +61,14 @@ public class Automata {
     
     public boolean esFinal(String estado){
         return estadosFinales.contains(estado);
+    }
+    
+    public boolean esEstadoInicial(String estado){
+        return this.estadoInicial.equals(estado);
+    }
+    
+    public boolean esEstadoFinal(String estado){
+        return this.estadosFinales.contains(estado);
     }
     
     @Override
